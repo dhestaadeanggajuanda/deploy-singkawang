@@ -29,14 +29,14 @@ services:
       args:
         # BUILD-TIME: host FETCH CKAN = IP LAN (selalu resolvable di build container,
         # tanpa DNS/SSL publik). URL browser-facing di-rebase ke CKAN_PUBLIC_URL.
-        DMS: ${DMS_INTERNAL:-http://172.16.20.229:5000}
+        DMS: ${DMS_INTERNAL:-http://BACKEND_IP:5000}
         # Host publik tetap untuk URL unduh/gambar yang sampai ke browser.
         CKAN_PUBLIC_URL: ${DMS_PUBLIC:-https://data.singkawangkota.go.id}
     image: satudata-skw:latest
     container_name: satudata-skw-portal
     environment:
       # RUNTIME: proxy /api/resource mengambil byte via host internal ini.
-      DMS: ${DMS_INTERNAL:-http://172.16.20.229:5000}
+      DMS: ${DMS_INTERNAL:-http://BACKEND_IP:5000}
       # Allowlist proxy = host publik (URL yang divalidasi dari browser).
       CKAN_PUBLIC_URL: ${DMS_PUBLIC:-https://data.singkawangkota.go.id}
       NODE_ENV: production
