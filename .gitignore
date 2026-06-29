@@ -2,10 +2,11 @@
 .env
 .env.*.local
 
-# Dokumen internal hasil Vulnerability Assessment & catatan — JANGAN dipublikasikan
+# Dokumen internal (VA, monitoring, catatan) — JANGAN dipublikasikan
 SECURITY-REMEDIATION.md
 RINGKASAN-EKSEKUTIF-VA.md
 aapanel-edits.md
+MONITORING.md
 New Dokumen Teks.txt
 
 # OS / editor
