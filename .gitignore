@@ -1,0 +1,13 @@
+# Rahasia / konfigurasi lokal — JANGAN di-commit (pakai .env.example sebagai template)
+.env
+.env.*.local
+
+# Dokumen internal hasil Vulnerability Assessment & catatan — JANGAN dipublikasikan
+SECURITY-REMEDIATION.md
+RINGKASAN-EKSEKUTIF-VA.md
+aapanel-edits.md
+New Dokumen Teks.txt
+
+# OS / editor
+.DS_Store
+Thumbs.db

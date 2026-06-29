@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+
+  # ── Reverse proxy: melayani KEDUA subdomain (portal + CKAN) ──────────
+  nginx:
+    image: nginx:1.25-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # Sertifikat pemerintah — wildcard *.singkawangkota.go.id direkomendasikan
+      - ${SSL_CERT_PATH}:/etc/ssl/certs/server.crt:ro
+      - ${SSL_KEY_PATH}:/etc/ssl/private/server.key:ro
+      - nginx_logs:/var/log/nginx
+    extra_hosts:
+      # Agar nginx bisa resolve IP host LAN bila perlu (opsional)
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - portal
+    restart: unless-stopped
+
+  # ── Next.js portal (hanya diakses via nginx, tidak expose port) ──────
+  portal:
+    build:
+      context: https://github.com/dhestaadeanggajuanda/satudata-skw.git#master
+      dockerfile: Dockerfile
+      args:
+        # BUILD-TIME: host FETCH CKAN = IP LAN (selalu resolvable di build container,
+        # tanpa DNS/SSL publik). URL browser-facing di-rebase ke CKAN_PUBLIC_URL.
+        DMS: ${DMS_INTERNAL:-http://172.16.20.229:5000}
+        # Host publik tetap untuk URL unduh/gambar yang sampai ke browser.
+        CKAN_PUBLIC_URL: ${DMS_PUBLIC:-https://data.singkawangkota.go.id}
+    image: satudata-skw:latest
+    container_name: satudata-skw-portal
+    environment:
+      # RUNTIME: proxy /api/resource mengambil byte via host internal ini.
+      DMS: ${DMS_INTERNAL:-http://172.16.20.229:5000}
+      # Allowlist proxy = host publik (URL yang divalidasi dari browser).
+      CKAN_PUBLIC_URL: ${DMS_PUBLIC:-https://data.singkawangkota.go.id}
+      NODE_ENV: production
+    restart: unless-stopped
+
+volumes:
+  nginx_logs:
